@@ -51,7 +51,7 @@
     </details>
 
     <h2 id="contact">Contact us</h2>
-    <form id="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+    <form id="contact-form" action="https://formspree.io/f/xdeawqdz" method="POST">
       <label for="email">Your email <span class="hint">so we can reply</span></label>
       <input id="email" name="email" type="email" autocomplete="email" required>
 
@@ -91,10 +91,6 @@
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      if (form.action.includes("YOUR_FORM_ID")) {
-        show("The contact form isn't connected yet. Please try again later.", "error");
-        return;
-      }
       button.disabled = true;
       show("Sending…", "");
       try {
@@ -103,9 +99,15 @@
           body: new FormData(form),
           headers: { Accept: "application/json" },
         });
-        if (!response.ok) throw new Error("HTTP " + response.status);
-        form.reset();
-        show("Thanks, your message was sent. We'll reply by email.", "ok");
+        if (response.ok) {
+          form.reset();
+          show("Thanks, your message was sent. We'll reply by email.", "ok");
+        } else {
+          // Formspree says what's wrong, e.g. "email should be an email".
+          const data = await response.json().catch(() => ({}));
+          const reasons = (data.errors || []).map((error) => [error.field, error.message].filter(Boolean).join(" "));
+          show(reasons.length ? "Your message wasn't sent: " + reasons.join(", ") + "." : "Your message couldn't be sent. Please try again.", "error");
+        }
       } catch {
         show("Your message couldn't be sent. Check your connection and try again.", "error");
       } finally {
