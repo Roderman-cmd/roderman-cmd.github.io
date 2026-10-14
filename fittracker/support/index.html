@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Support · FitTracker</title>
+  <meta name="description" content="Answers to common questions, and a form to contact FitTracker.">
+  <link rel="icon" href="../icon.png">
+  <link rel="apple-touch-icon" href="../icon.png">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <header class="site">
+    <div class="wrap">
+      <a class="brand" href="../"><img src="../icon.png" alt="">FitTracker</a>
+      <nav><a href="./" aria-current="page">Support</a><a href="../privacy/">Privacy</a></nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <h1>Support</h1>
+    <p class="lede">Questions, problems or ideas? The answer may be below. If not, send a message and we'll reply by email.</p>
+
+    <h2>Common questions</h2>
+    <details>
+      <summary>How do I bring my workouts from another app?</summary>
+      <p>Export your workouts as a CSV file from your old app (Setgraph, Strong and most other workout apps can). In FitTracker, open Settings (the gear on the Sets tab) → Import Workouts and choose the file. FitTracker shows what it found before anything is imported, and importing the same file again won't create duplicates.</p>
+    </details>
+    <details>
+      <summary>My workouts aren't showing on my other device.</summary>
+      <p>Check that both devices are signed in to the same Apple Account with iCloud on, and that iCloud Sync is on in FitTracker's Settings, which also shows when it last synced. Syncing can take a few minutes, especially after a large import. On a new device, let it finish before importing anything.</p>
+    </details>
+    <details>
+      <summary>How do I connect Apple Health?</summary>
+      <p>In FitTracker's Settings → Apple Health, choose what to save and read. If you didn't allow access earlier, open the Health app, tap your profile picture, then Apps, then FitTracker, and turn on what you'd like.</p>
+    </details>
+    <details>
+      <summary>The rest timer doesn't alert me.</summary>
+      <p>Allow notifications for FitTracker in your iPhone's Settings → Notifications → FitTracker. You can pick the alert sound in FitTracker's Settings → Rest Timer Sound.</p>
+    </details>
+    <details>
+      <summary>Are my progress photos private?</summary>
+      <p>Yes. They're kept inside FitTracker, not in your photo library, with location and other metadata removed, and they're locked with Face ID unless you turn that off in Body → Progress Photos.</p>
+    </details>
+    <details>
+      <summary>How do I export my data?</summary>
+      <p>Settings → Export CSV creates a file with all your sets. You can open it in a spreadsheet or import it back into FitTracker.</p>
+    </details>
+    <details>
+      <summary>How do I delete my data?</summary>
+      <p>See <a href="../privacy/#delete">Deleting your data</a> in the privacy policy.</p>
+    </details>
+
+    <h2 id="contact">Contact us</h2>
+    <form id="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+      <label for="email">Your email <span class="hint">so we can reply</span></label>
+      <input id="email" name="email" type="email" autocomplete="email" required>
+
+      <label for="topic">Topic</label>
+      <select id="topic" name="topic">
+        <option>Question</option>
+        <option>Problem</option>
+        <option>Idea</option>
+        <option>Privacy</option>
+        <option>Other</option>
+      </select>
+
+      <label for="message">Message</label>
+      <textarea id="message" name="message" required></textarea>
+
+      <label for="device">iPhone and iOS version <span class="hint">optional, helps with problems</span></label>
+      <input id="device" name="device" placeholder="e.g. iPhone 17, iOS 27">
+
+      <div class="trap" aria-hidden="true"><input type="text" name="_gotcha" tabindex="-1" autocomplete="off"></div>
+      <input type="hidden" name="_subject" value="FitTracker support">
+      <button type="submit">Send</button>
+      <p class="status" role="status" aria-live="polite"></p>
+    </form>
+  </main>
+  <footer>
+    <div class="wrap"><a href="./">Support</a> · <a href="../privacy/">Privacy Policy</a></div>
+  </footer>
+  <script>
+    const form = document.getElementById("contact-form");
+    const status = form.querySelector(".status");
+    const button = form.querySelector("button");
+
+    function show(text, kind) {
+      status.textContent = text;
+      status.className = "status " + kind;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (form.action.includes("YOUR_FORM_ID")) {
+        show("The contact form isn't connected yet. Please try again later.", "error");
+        return;
+      }
+      button.disabled = true;
+      show("Sending…", "");
+      try {
+        const response = await fetch(form.action, {
+          method: "POST",
+          body: new FormData(form),
+          headers: { Accept: "application/json" },
+        });
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        form.reset();
+        show("Thanks, your message was sent. We'll reply by email.", "ok");
+      } catch {
+        show("Your message couldn't be sent. Check your connection and try again.", "error");
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
